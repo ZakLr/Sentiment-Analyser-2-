@@ -4,9 +4,8 @@ import spacy
 model = jb.load('emotion_detector_model.pkl')
 # input a text and preprocess it
 nlp = spacy.load("en_core_web_sm")
-while True:
-    text = input("Enter your text: ")
-
+import gradio as gr
+def predict_val(text):
     tokenized_text = nlp(text)
     tokens = [token.text for token in tokenized_text]
     preprocessed_text = " ".join(tokens)
@@ -19,9 +18,17 @@ while True:
 
     # Predict the emotion label
     predicted_emotion = model.predict(input_features)
-    if (predicted_emotion ==0):
-        print("fear")
-    elif(predicted_emotion==1):
-         print("anger")
-    else:
-         print("joy")
+    return "fear/sad" if predicted_emotion == 0 else "anger" if predicted_emotion == 1 else "joy"
+
+
+iface = gr.Interface(
+ fn=predict_val,
+ inputs="text",
+ outputs="text",
+ live=True,
+ title="Spam Detector",
+ description=""
+)
+
+
+iface.launch()
